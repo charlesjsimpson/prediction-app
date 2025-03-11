@@ -2,6 +2,15 @@ import streamlit as st
 import sys
 import os
 
+# Add the project root to the path to ensure imports work correctly
+root_dir = os.path.dirname(os.path.abspath(__file__))
+if root_dir not in sys.path:
+    sys.path.append(root_dir)
+
+# Initialize session state if needed
+if 'show_dashboard' not in st.session_state:
+    st.session_state.show_dashboard = False
+
 # Set page configuration
 st.set_page_config(
     page_title="Hotel Financial Dashboard",
@@ -10,18 +19,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Title and header
-st.title("Hotel Financial Dashboard")
-st.header("Welcome to your financial planning tool")
-
-st.write("This dashboard helps you analyze and forecast your hotel's financial performance.")
-
-st.success("Streamlit Cloud deployment successful!")
+# Simple Hello World app
+if not st.session_state.show_dashboard:
+    st.title("Hotel Financial Dashboard")
+    st.header("Welcome to your financial planning tool")
+    
+    st.write("This dashboard helps you analyze and forecast your hotel's financial performance.")
+    
+    st.success("Streamlit Cloud deployment successful!")
     
     # Add a button to continue to the main app
     if st.button("Continue to Dashboard"):
         st.session_state.show_dashboard = True
-        st.experimental_rerun()
+        st.rerun()
 
 # Show the dashboard
 if st.session_state.show_dashboard:
@@ -57,5 +67,4 @@ if st.session_state.show_dashboard:
             
             # Fallback to a simple interface
             st.warning("Falling back to simple interface due to import errors.")
-            st.title("Hotel Financial Dashboard")
             st.info("Please check the logs for more information on how to fix this issue.")
