@@ -1,20 +1,24 @@
 import streamlit as st
+import sys
+import os
 
-# Simple Hello World app
-st.title("Hello World!")
-st.header("Welcome to the Hotel Financial Dashboard")
+# Add the project root to the path to ensure imports work correctly
+root_dir = os.path.dirname(os.path.abspath(__file__))
+if root_dir not in sys.path:
+    sys.path.append(root_dir)
 
-st.write("This is a simple test to make sure Streamlit is working correctly.")
-
-st.success("Everything is working as expected!")
-
-# Add a button to continue to the main app
-if st.button("Continue to Dashboard"):
-    # In a real app, this would navigate to the main dashboard
-    st.session_state.show_dashboard = True
-
-# Check if we should show the dashboard
-if st.session_state.get('show_dashboard', False):
-    st.write("Loading dashboard...")
-    # Here we would import and show the main dashboard
-    st.info("Full dashboard will be loaded here")
+# Import the main app functionality
+try:
+    from app.main import run_app
+    
+    # Run the main application
+    run_app()
+    
+except Exception as e:
+    st.error(f"Error loading dashboard: {e}")
+    st.write("Please check the console for more details.")
+    
+    # Display the directory structure for debugging
+    st.code(f"Current directory: {os.getcwd()}")
+    st.code(f"Files in root directory: {os.listdir(root_dir)}")
+    st.code(f"Files in app directory: {os.listdir(os.path.join(root_dir, 'app'))}")

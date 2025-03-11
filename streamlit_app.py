@@ -2,23 +2,21 @@ import streamlit as st
 import sys
 import os
 
-# Add the project root to the path to ensure imports work correctly
-root_dir = os.path.dirname(os.path.abspath(__file__))
-if root_dir not in sys.path:
-    sys.path.append(root_dir)
+# Set page configuration
+st.set_page_config(
+    page_title="Hotel Financial Dashboard",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Initialize session state if needed
-if 'show_dashboard' not in st.session_state:
-    st.session_state.show_dashboard = False
+# Title and header
+st.title("Hotel Financial Dashboard")
+st.header("Welcome to your financial planning tool")
 
-# Simple Hello World app
-if not st.session_state.show_dashboard:
-    st.title("Hotel Financial Dashboard")
-    st.header("Welcome to your financial planning tool")
-    
-    st.write("This dashboard helps you analyze and forecast your hotel's financial performance.")
-    
-    st.success("Streamlit Cloud deployment successful!")
+st.write("This dashboard helps you analyze and forecast your hotel's financial performance.")
+
+st.success("Streamlit Cloud deployment successful!")
     
     # Add a button to continue to the main app
     if st.button("Continue to Dashboard"):
