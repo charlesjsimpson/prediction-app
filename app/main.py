@@ -11,13 +11,8 @@ from utils.data_processing import process_financial_data, generate_budget_plan
 from utils.authentication import check_authentication, create_user, logout_user
 
 def run_app():
-    # Set page configuration
-    st.set_page_config(
-        page_title="Hotel Financial Dashboard",
-        page_icon="📊",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
+    # Page configuration is now handled in streamlit_app.py
+    # Do not call st.set_page_config() here as it's already called in the main entry point
 
     # Create necessary directories if they don't exist
     Path("data").mkdir(exist_ok=True)

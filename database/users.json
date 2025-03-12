@@ -2,5 +2,9 @@
     "admin": {
         "password_hash": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
         "created_at": "2025-03-11T11:52:39.111822"
+    },
+    "charlesjsimpson@hotmail.com": {
+        "password_hash": "8b45aa261a224e82cc911aae040c892fc5aacfbfc1ef3cbbbe72f0eb22d5bdfd",
+        "created_at": "2025-03-12T17:11:31.307079"
     }
 }
