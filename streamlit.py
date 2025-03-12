@@ -7,9 +7,8 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 if root_dir not in sys.path:
     sys.path.append(root_dir)
 
-# Initialize session state if needed
-if 'show_dashboard' not in st.session_state:
-    st.session_state.show_dashboard = False
+# Import the new cloud-friendly authentication system
+from utils.cloud_auth import login_form
 
 # Set page configuration
 st.set_page_config(
@@ -19,22 +18,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Simple Hello World app
-if not st.session_state.show_dashboard:
-    st.title("Hotel Financial Dashboard")
-    st.header("Welcome to your financial planning tool")
+# Handle authentication
+if login_form():
+    # User is authenticated, show the dashboard
+    st.sidebar.title(f"Welcome, {st.session_state.username}!")
     
-    st.write("This dashboard helps you analyze and forecast your hotel's financial performance.")
-    
-    st.success("Streamlit Cloud deployment successful!")
-    
-    # Add a button to continue to the main app
-    if st.button("Continue to Dashboard"):
-        st.session_state.show_dashboard = True
-        st.rerun()
-
-# Show the dashboard
-if st.session_state.show_dashboard:
     # Import the main app functionality
     try:
         # First try the standard import path
