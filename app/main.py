@@ -8,7 +8,7 @@ from pathlib import Path
 
 # Import utility functions
 from utils.data_processing import process_financial_data, generate_budget_plan
-from utils.authentication import check_authentication, create_user, logout_user
+from utils.authentication import check_authentication, create_user
 
 def run_app():
     # Page configuration is now handled in streamlit_app.py
@@ -78,14 +78,6 @@ def run_app():
         # Main application interface when authenticated
         st.sidebar.title(f"Welcome, {st.session_state.username}!")
         
-        # Logout button
-        if st.sidebar.button("Logout"):
-            logout_user()
-            st.session_state.authenticated = False
-            st.session_state.username = None
-            cookie_manager.delete("auth_token")
-            st.experimental_rerun()
-    
         # Main content
         st.title("Hotel Financial Dashboard & Business Planning")
         

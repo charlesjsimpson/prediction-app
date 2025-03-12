@@ -14,6 +14,14 @@ root_dir = Path(__file__).parent.parent
 if str(root_dir) not in sys.path:
     sys.path.append(str(root_dir))
 
+# Import the authentication protection
+from utils.page_protection import check_authentication
+
+# Check if user is authenticated before proceeding
+if not check_authentication():
+    # If not authenticated, the check_authentication function will stop execution
+    st.stop()
+
 # Import the data loading functions and analysis utilities
 from fetch_data.fetch_data_PU import load_data
 from utils.analysis import calculate_metrics, plot_revenue_trend, plot_occupancy_by_day_of_week, forecast_revenue, plot_revenue_by_type, compare_years
