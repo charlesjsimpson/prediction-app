@@ -26,8 +26,13 @@ def check_authentication():
         
         # Add a button to go to the main page
         if st.button("Go to Login Page"):
-            # This will only work when clicked
-            st.switch_page("streamlit.py")
+            # Use a JavaScript redirect as an alternative to st.switch_page
+            st.markdown(
+                """
+                <script>window.location.href='/';</script>
+                """,
+                unsafe_allow_html=True
+            )
         
         # Stop execution of the rest of the page
         st.stop()

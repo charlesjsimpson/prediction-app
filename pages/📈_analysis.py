@@ -8,34 +8,37 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import warnings
+from utils.page_protection import check_authentication
+from utils.logging_system import log_page_access, log_data_operation, log_error, log_action
+from fetch_data.fetch_data_PU import load_data
+from utils.analysis import calculate_metrics, plot_revenue_trend, plot_occupancy_by_day_of_week, forecast_revenue, plot_revenue_by_type, compare_years
 
 # Add the project root to the path to ensure imports work correctly
 root_dir = Path(__file__).parent.parent
 if str(root_dir) not in sys.path:
     sys.path.append(str(root_dir))
 
-# Import the authentication protection
-from utils.page_protection import check_authentication
-
 # Check if user is authenticated before proceeding
 if not check_authentication():
     # If not authenticated, the check_authentication function will stop execution
+    log_action("Authentication failed", level="warning")
     st.stop()
 
-# Import the data loading functions and analysis utilities
-from fetch_data.fetch_data_PU import load_data
-from utils.analysis import calculate_metrics, plot_revenue_trend, plot_occupancy_by_day_of_week, forecast_revenue, plot_revenue_by_type, compare_years
+# Log page access
+log_page_access("Analysis Dashboard")
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
 
 # Load the data
 try:
+    log_data_operation("loading", "price data")
     price, df_1 = load_data()
     
     # Combine the dataframes if df_1 is not empty
     if not df_1.empty:
         price = pd.concat([price, df_1], ignore_index=True)
+        log_data_operation("combining", "price data", "Combined multiple dataframes")
         
     # Ensure that the 'day' column is correctly set up
     price['day'] = pd.to_datetime(price['day'], errors='coerce')
@@ -48,10 +51,12 @@ try:
     # Get week number
     price['week'] = price['day'].dt.isocalendar().week
     
+    log_data_operation("processed", "price data", f"Successfully processed {len(price)} records")
     st.success(f"Data loaded successfully! {len(price)} records found.")
-    
 except Exception as e:
-    st.error(f"Error loading data: {e}")
+    error_msg = f"Error loading or processing data: {e}"
+    log_error(error_msg, e)
+    st.error(error_msg)
     price = pd.DataFrame()
     # Show detailed error information in an expander
     with st.expander("Error Details"):
@@ -60,12 +65,16 @@ except Exception as e:
         # Check if data files exist
         data_dir = os.path.join(root_dir, 'data')
         st.write(f"Checking data directory: {data_dir}")
+        log_data_operation("checking", "data directory", f"Checking {data_dir}")
         
         if os.path.exists(data_dir):
             files = os.listdir(data_dir)
             st.write(f"Files found: {', '.join(files)}")
+            log_data_operation("found", "data files", f"Found {len(files)} files")
         else:
             st.write("Data directory not found!")
+            log_error("Data directory not found", None)
+    st.stop()
 
 # Set the title of the page
 st.title("Pricing Analysis")

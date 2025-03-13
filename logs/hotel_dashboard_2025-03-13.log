@@ -1,0 +1,65 @@
+2025-03-13 08:11:15,885 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Budget Planning
+2025-03-13 08:11:15,901 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-13 08:11:16,773 - hotel_dashboard - INFO - User: admin - Action: Data loaded - Dataset: price data - Details: Successfully loaded 7103 records
+2025-03-13 08:11:16,774 - hotel_dashboard - INFO - User: admin - Action: Data generating - Dataset: budget_2025 - Details: Creating new budget based on historical data
+2025-03-13 08:11:16,775 - hotel_dashboard - ERROR - User: admin - Action: Error loading budget data for 2025: 'month' - Details: 'month'
+2025-03-13 08:21:06,341 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 08:21:17,185 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 08:21:17,278 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 08:21:17,279 - hotel_dashboard - INFO - User: admin - Action: User authenticated
+2025-03-13 08:21:17,280 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Main Dashboard
+2025-03-13 08:21:26,268 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Budget Planning
+2025-03-13 08:21:26,270 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-13 08:21:26,985 - hotel_dashboard - INFO - User: admin - Action: Data extracting - Dataset: month data - Details: Extracting month from day column
+2025-03-13 08:21:26,989 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: month data - Details: Month column added to DataFrame
+2025-03-13 08:21:26,989 - hotel_dashboard - INFO - User: admin - Action: Data extracting - Dataset: month_name data - Details: Extracting month name from day column
+2025-03-13 08:21:26,993 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: month_name data - Details: Month name column added to DataFrame
+2025-03-13 08:21:26,993 - hotel_dashboard - INFO - User: admin - Action: Data loaded - Dataset: price data - Details: Successfully loaded 7103 records
+2025-03-13 08:21:26,994 - hotel_dashboard - INFO - User: admin - Action: Data generating - Dataset: budget_2025 - Details: Creating new budget based on historical data
+2025-03-13 08:21:36,771 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Monthly Tracking Dashboard
+2025-03-13 08:21:36,778 - hotel_dashboard - INFO - User: admin - Action: Data processing - Dataset: price data - Details: Processing date columns
+2025-03-13 08:21:36,811 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed date columns
+2025-03-13 08:21:36,811 - hotel_dashboard - INFO - User: admin - Action: Viewing monthly tab
+2025-03-13 08:21:36,811 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: year data - Details: Extracted year from date column
+2025-03-13 08:21:36,811 - hotel_dashboard - INFO - User: admin - Action: Data aggregating - Dataset: monthly summary - Details: Grouping data by month and year
+2025-03-13 08:21:36,816 - hotel_dashboard - INFO - User: admin - Action: Data aggregated - Dataset: monthly summary - Details: Created summary with 36 records
+2025-03-13 08:21:36,836 - hotel_dashboard - INFO - User: admin - Action: Displayed KPI summary table
+2025-03-13 08:21:36,841 - hotel_dashboard - INFO - User: admin - Action: Displayed key ratios table
+2025-03-13 08:21:40,483 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Analysis Dashboard
+2025-03-13 08:21:40,484 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-13 08:21:41,184 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed 7103 records
+2025-03-13 08:21:47,127 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Monthly Tracking Dashboard
+2025-03-13 08:21:47,136 - hotel_dashboard - INFO - User: admin - Action: Data processing - Dataset: price data - Details: Processing date columns
+2025-03-13 08:21:47,197 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed date columns
+2025-03-13 08:21:47,198 - hotel_dashboard - INFO - User: admin - Action: Viewing monthly tab
+2025-03-13 08:21:47,198 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: year data - Details: Extracted year from date column
+2025-03-13 08:21:47,198 - hotel_dashboard - INFO - User: admin - Action: Data aggregating - Dataset: monthly summary - Details: Grouping data by month and year
+2025-03-13 08:21:47,202 - hotel_dashboard - INFO - User: admin - Action: Data aggregated - Dataset: monthly summary - Details: Created summary with 36 records
+2025-03-13 08:21:47,209 - hotel_dashboard - INFO - User: admin - Action: Displayed KPI summary table
+2025-03-13 08:21:47,214 - hotel_dashboard - INFO - User: admin - Action: Displayed key ratios table
+2025-03-13 08:29:55,021 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 08:30:14,112 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 08:30:14,165 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 08:30:14,166 - hotel_dashboard - INFO - User: admin - Action: User authenticated
+2025-03-13 08:30:14,167 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Main Dashboard
+2025-03-13 08:30:32,601 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Budget Planning
+2025-03-13 08:30:32,602 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-13 08:30:33,237 - hotel_dashboard - INFO - User: admin - Action: Data extracting - Dataset: month data - Details: Extracting month from day column
+2025-03-13 08:30:33,241 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: month data - Details: Month column added to DataFrame
+2025-03-13 08:30:33,241 - hotel_dashboard - INFO - User: admin - Action: Data extracting - Dataset: month_name data - Details: Extracting month name from day column
+2025-03-13 08:30:33,245 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: month_name data - Details: Month name column added to DataFrame
+2025-03-13 08:30:33,245 - hotel_dashboard - INFO - User: admin - Action: Data loaded - Dataset: price data - Details: Successfully loaded 7103 records
+2025-03-13 08:30:33,246 - hotel_dashboard - INFO - User: admin - Action: Data generating - Dataset: budget_2025 - Details: Creating new budget based on historical data
+2025-03-13 08:30:34,484 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Monthly Tracking Dashboard
+2025-03-13 08:30:34,485 - hotel_dashboard - INFO - User: admin - Action: Data processing - Dataset: price data - Details: Processing date columns
+2025-03-13 08:30:34,507 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed date columns
+2025-03-13 08:30:34,507 - hotel_dashboard - INFO - User: admin - Action: Viewing monthly tab
+2025-03-13 08:30:34,507 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: year data - Details: Extracted year from date column
+2025-03-13 08:30:34,508 - hotel_dashboard - INFO - User: admin - Action: Data aggregating - Dataset: monthly summary - Details: Grouping data by month and year
+2025-03-13 08:30:34,510 - hotel_dashboard - INFO - User: admin - Action: Data aggregated - Dataset: monthly summary - Details: Created summary with 36 records
+2025-03-13 08:30:34,522 - hotel_dashboard - INFO - User: admin - Action: Displayed KPI summary table
+2025-03-13 08:30:34,526 - hotel_dashboard - INFO - User: admin - Action: Displayed key ratios table
+2025-03-13 08:30:35,334 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Analysis Dashboard
+2025-03-13 08:30:35,334 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-13 08:30:35,959 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed 7103 records
+2025-03-13 08:48:13,853 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
