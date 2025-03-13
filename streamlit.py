@@ -1,14 +1,17 @@
 import streamlit as st
 import sys
 import os
+from utils.logging_system import setup_logger, log_action, log_page_access, log_error
+from utils.cloud_auth import login_form
 
 # Add the project root to the path to ensure imports work correctly
 root_dir = os.path.dirname(os.path.abspath(__file__))
 if root_dir not in sys.path:
     sys.path.append(root_dir)
-    
-# Import the new cloud-friendly authentication system
-from utils.cloud_auth import login_form
+
+# Set up the main application logger
+main_logger = setup_logger('hotel_dashboard_main')
+main_logger.info("Starting Hotel Financial Dashboard application")
 
 # Set page configuration
 st.set_page_config(
@@ -19,17 +22,28 @@ st.set_page_config(
 )
 
 # Handle authentication
-if login_form():
-    # User is authenticated, show the dashboard
-    st.sidebar.title(f"Welcome, {st.session_state.username}!")
+try:
+    if login_form():
+        # User is authenticated, show the dashboard
+        st.sidebar.title(f"Welcome, {st.session_state.username}!")
+        log_action("User authenticated", user=st.session_state.username)
+        log_page_access("Main Dashboard")
+except Exception as e:
+    error_msg = f"Authentication error: {e}"
+    log_error(error_msg, e)
+    st.error(error_msg)
     
     # Import the main app functionality
     try:
         # First try the standard import path
+        log_action("Loading main application")
         from app.main import run_app
         run_app()
+        log_action("Application loaded successfully")
     except ImportError as e:
-        st.error(f"Import error: {e}")
+        error_msg = f"Import error: {e}"
+        log_error(error_msg, e)
+        st.error(error_msg)
         st.info("Trying alternative import paths...")
         
         try:
@@ -39,13 +53,23 @@ if login_form():
                 sys.path.append(app_path)
             
             # Try direct import
+            log_action("Attempting alternative import path")
             from main import run_app
             run_app()
+            log_action("Application loaded successfully via alternative path")
         except Exception as e:
-            st.error(f"Error loading dashboard: {e}")
+            error_msg = f"Error loading dashboard: {e}"
+            log_error(error_msg, e)
+            st.error(error_msg)
             
             # Display debugging information
             st.subheader("Debugging Information")
+            debug_info = {
+                "Current directory": os.getcwd(),
+                "Python path": sys.path,
+                "Files in root directory": os.listdir(root_dir)
+            }
+            log_action("Displaying debugging information", details=str(debug_info))
             st.code(f"Current directory: {os.getcwd()}")
             st.code(f"Python path: {sys.path}")
             st.code(f"Files in root directory: {os.listdir(root_dir)}")

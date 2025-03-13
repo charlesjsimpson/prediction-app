@@ -7,7 +7,7 @@ project_root = Path(__file__).parent.parent
 data_root = os.path.join(project_root, 'data')
 
 # List of main files to process
-file_names = ["2023_PU.xlsx", "2024_PU.xlsx", "2025_02_13_PU.xlsx"]
+file_names = ["2023_PU.xlsx", "2024_PU.xlsx", "2025_02_13_PU.xlsx", "2025_2025_03_13_PU.xlsx"]
 
 # Name of the file to process separately
 separate_file = "2025_02_12_PU.xlsx"
@@ -38,6 +38,12 @@ def transform_dataframe(df):
 
     # Add a column with the year
     df['year'] = pd.to_datetime(df['day'], errors='coerce').dt.year
+
+    # Add a column with the month number (1-12)
+    df['month'] = pd.to_datetime(df['day'], errors='coerce').dt.month
+    
+    # Add a column with the month name
+    df['month_name'] = pd.to_datetime(df['day'], errors='coerce').dt.month_name()
 
     # Add a column with the year-month
     df['year_month'] = pd.to_datetime(df['day'], errors='coerce').dt.to_period('M').astype(str)
