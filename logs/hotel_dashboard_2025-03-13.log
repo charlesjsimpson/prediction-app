@@ -63,3 +63,8 @@
 2025-03-13 08:30:35,334 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
 2025-03-13 08:30:35,959 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed 7103 records
 2025-03-13 08:48:13,853 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 10:10:40,329 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 10:10:52,803 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 10:10:53,721 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 10:11:12,550 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
+2025-03-13 10:12:34,590 - hotel_dashboard_main - INFO - Starting Hotel Financial Dashboard application
