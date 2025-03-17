@@ -7,7 +7,7 @@ project_root = Path(__file__).parent.parent
 data_root = os.path.join(project_root, 'data')
 
 # List of main files to process
-file_names = ["2023_PU.xlsx", "2024_PU.xlsx", "2025_PU_03_13.xlsx"]
+file_names = ["2023_PU.xlsx", "2024_PU.xlsx", "2025_PU_03_17.xlsx"]  # Updated to use the latest file
 
 # Name of the file to process separately
 separate_file = "2025_02_12_PU.xlsx"
@@ -36,20 +36,17 @@ def transform_dataframe(df):
     # Keep only the necessary columns
     df = df[['day', 'type', 'sous_type', 'n_rooms', 'n_customers', 'ca_room', 'pm', 'Source_File']]
 
-    # Add a column with the year
-    df['year'] = pd.to_datetime(df['day'], errors='coerce').dt.year
-
-    # Add a column with the month number (1-12)
-    df['month'] = pd.to_datetime(df['day'], errors='coerce').dt.month
+    # Create a datetime column to avoid repeated conversions
+    datetime_col = pd.to_datetime(df['day'], errors='coerce')
     
-    # Add a column with the month name
-    df['month_name'] = pd.to_datetime(df['day'], errors='coerce').dt.month_name()
+    # Use .loc to avoid SettingWithCopyWarning
+    df.loc[:, 'year'] = datetime_col.dt.year
+    df.loc[:, 'month'] = datetime_col.dt.month
+    df.loc[:, 'month_name'] = datetime_col.dt.month_name()
+    df.loc[:, 'year_month'] = datetime_col.dt.to_period('M').astype(str)
 
-    # Add a column with the year-month
-    df['year_month'] = pd.to_datetime(df['day'], errors='coerce').dt.to_period('M').astype(str)
-
-    # Add a column with the day of the week
-    df['day_of_week'] = pd.to_datetime(df['day'], errors='coerce').dt.day_name()
+    # Add a column with the day of the week (using the datetime column we already created)
+    df.loc[:, 'day_of_week'] = datetime_col.dt.day_name()
 
     return df
 

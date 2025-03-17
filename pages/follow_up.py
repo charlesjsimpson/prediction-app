@@ -23,14 +23,14 @@ st.set_page_config(page_title="Hotel KPI Dashboard", layout="wide")
 
 def main():
     st.title("Hotel KPI Dashboard")
-    st.subheader("KPI Summary (January 1 - March 12, 2025)")
+    
+    # This will be updated once we have the actual date range
     
     # Use the imported price dataframe
     df = price.copy()
     
-    # Get available years for filtering
-    available_years = sorted(df['year'].unique().tolist())
-    current_year = datetime.now().year
+    # Set the current year for analysis
+    year = 2025  # Current year for analysis
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # Sidebar configuration
@@ -53,45 +53,83 @@ def main():
             st.success(f"Total rooms updated to {new_total_rooms}")
         
         st.divider()
-        
-        # Year selection
-        selected_year = st.selectbox(
-            "Select Year",
-            options=available_years,
-            index=available_years.index(current_year) if current_year in available_years else len(available_years) - 1
-        )
     
     # Get the last update date
     last_data_date = get_last_update_date(df)
     
     # Main dashboard content
-    st.header(f"{selected_year} Hotel Performance Overview")
+    st.header(f"{year} Hotel Performance Overview")
     
     # Display file and date information
     if last_data_date:
         last_month = last_data_date.strftime("%B")
         last_day = last_data_date.day
         
-        # Get filename and extract date information
-        if 'Source_File' in df.columns:
-            latest_file = df.sort_values('day', ascending=False)['Source_File'].iloc[0] if not df.empty else "Unknown file"
+        # Year is already defined at the top of the function
+        
+        # Get filename and extract date information - find the latest file for 2025
+        files_2025 = df[df['year'] == 2025]['Source_File'].unique() if 'Source_File' in df.columns else []
+        
+        if len(files_2025) > 0:
+            # Sort files by their date in the filename (assuming format YYYY_PU_MM_DD.xlsx)
+            def extract_date_from_filename(filename):
+                try:
+                    parts = filename.split('_')
+                    if len(parts) >= 4:
+                        month_part = int(parts[2])
+                        day_part = int(parts[3].split('.')[0])
+                        return (month_part, day_part)  # Return as tuple for sorting
+                    return (0, 0)  # Default for invalid format
+                except (ValueError, IndexError):
+                    return (0, 0)  # Default for invalid format
+            
+            # Sort files by date (most recent first)
+            latest_file = sorted(files_2025, key=extract_date_from_filename, reverse=True)[0]
+            
+            # Extract date from the latest filename
+            try:
+                parts = latest_file.split('_')
+                if len(parts) >= 4:
+                    year_part = int(parts[0])
+                    month_part = int(parts[2])
+                    day_part = int(parts[3].split('.')[0])
+                    file_date = datetime(year_part, month_part, day_part)
+                    file_date_str = file_date.strftime("%B %d, %Y")
+                    
+                    # Update the year variable based on the file
+                    year = year_part
+                else:
+                    file_date = datetime(year, 3, 17)  # Default to March 17, 2025
+                    file_date_str = file_date.strftime("%B %d, %Y")
+            except (ValueError, IndexError):
+                file_date = datetime(year, 3, 17)  # Default to March 17, 2025
+                file_date_str = file_date.strftime("%B %d, %Y")
         else:
-            latest_file = "2025_PU_03_13.xlsx"  # Fallback
+            latest_file = "2025_PU_03_17.xlsx"  # Fallback to the latest known file
+            file_date = datetime(year, 3, 17)  # Default to March 17, 2025
+            file_date_str = file_date.strftime("%B %d, %Y")
         
-        # Extract date from filename (2025_PU_03_13.xlsx -> March 13, 2025)
-        file_date_str = "March 13, 2025"  # Based on filename 2025_PU_03_13.xlsx
+        # The file date indicates when the report was generated
+        # The complete data is available until the day before the file date
         
-        # Since the file is dated March 13, the complete data is only available until March 12
+        # Calculate days in period - from January 1st to the last complete day
+        start_date = datetime(year, 1, 1)  # January 1st of the current year
         
-        # Calculate days in period - from January 1st to March 12th (last complete day)
-        start_date = datetime(2025, 1, 1)  # January 1st of the current year
-        end_date = datetime(2025, 3, 12)   # March 12, 2025 (last complete day)
+        # Define the last day where data is realized (YTD cutoff)
+        # This is the key variable that should be used throughout the script
+        # The last day with complete data is the day before the file date
+        last_realized_date = file_date - pd.Timedelta(days=1)  # Last day with complete data
+        end_date = last_realized_date  # Use this variable for all date-related calculations
         days_in_period = get_days_in_period(start_date, end_date)
         
         # Calculate the same period for previous year
-        prev_year_start = datetime(2024, 1, 1)  # January 1st of previous year
-        prev_year_end = datetime(2024, 3, 12)   # Same day/month in previous year
+        prev_year = year - 1  # Previous year for comparison
+        prev_year_start = datetime(prev_year, 1, 1)  # January 1st of previous year
+        prev_year_end = datetime(prev_year, last_realized_date.month, last_realized_date.day)  # Same day/month in previous year
         prev_year_days = get_days_in_period(prev_year_start, prev_year_end)
+        
+        # Now that we have the date range, update the subheader with dynamic dates
+        st.subheader(f"KPI Summary (January 1 - {last_realized_date.strftime('%B %d, %Y')})")
         
         # Move the expander after KPI calculation to avoid undefined variable errors
         # We'll store the expander content in a variable to display it later
@@ -129,12 +167,12 @@ def main():
     period_df = pd.concat([current_year_df, prev_year_df])
     
     # Calculate KPIs using the filtered data and the correct total rooms value
-    comparison_year = 2024  # Compare with previous year
-    kpis = calculate_kpis(period_df, year_filter=2025, comparison_year=comparison_year, is_ytd=False)
+    comparison_year = prev_year  # Compare with previous year
+    kpis = calculate_kpis(period_df, year_filter=year, comparison_year=comparison_year, is_ytd=False)
     
     # Calculate number of days with 100% occupancy for current and previous year
-    full_occupancy_days_current = count_full_occupancy_days(df, year=2025, is_ytd=True, current_date=end_date)
-    full_occupancy_days_prev = count_full_occupancy_days(df, year=2024, is_ytd=True, current_date=prev_year_end)
+    full_occupancy_days_current = count_full_occupancy_days(df, year=year, is_ytd=True, current_date=end_date)
+    full_occupancy_days_prev = count_full_occupancy_days(df, year=prev_year, is_ytd=True, current_date=prev_year_end)
     
     # Calculate percentage change in full occupancy days
     if full_occupancy_days_prev > 0:
@@ -144,10 +182,10 @@ def main():
     
     # KPI Summary section
     with kpi_container:
-        st.subheader("Key Performance Indicators")
+        st.subheader(f"Key Performance Indicators {year} - YTD")
         
         # Display all KPIs in a single row
-        col1, col2, col3, col4, col5 = st.columns(5)
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
         
         # Display Total Revenue
         with col1:
@@ -181,8 +219,17 @@ def main():
                 delta=f"{kpis['RevPAR']['change']:.1f}%" if 'change' in kpis['RevPAR'] else None
             )
         
-        # Display 100% Occupancy Days
+        # Display Rooms Sold
         with col5:
+            st.metric(
+                label="Rooms Sold",
+                value=f"{int(kpis['Rooms Sold']['value']):,}",
+                delta=f"{kpis['Rooms Sold']['change']:.1f}%" if 'change' in kpis['Rooms Sold'] else None,
+                help=f"Total number of rooms sold from January 1 to {last_realized_date.strftime('%B %d')}, {year}"
+            )
+            
+        # Display 100% Occupancy Days
+        with col6:
             # Format the delta with appropriate sign and color
             if full_occupancy_change == float('inf'):
                 delta_text = "N/A (prev. year: 0)"
@@ -193,8 +240,14 @@ def main():
                 label="100% Occupancy Days",
                 value=f"{full_occupancy_days_current}",
                 delta=delta_text,
-                help=f"Days with 100% occupancy rate from January 1 to March 12, 2025 (vs. {full_occupancy_days_prev} days in 2024)"
+                help=f"Days with 100% occupancy rate from January 1 to {last_realized_date.strftime('%B %d')}, {year} (vs. {full_occupancy_days_prev} days in {prev_year})"
             )
+        
+        # Add a divider after the KPI section for a new section
+        st.divider()
+        
+        # Space for a new section that will be used later
+        st.container()
         
         # Now that KPIs are calculated, we can display the data information expander
         with expander_placeholder.container():
@@ -203,8 +256,8 @@ def main():
                 st.info(f"📅 **DATA INFORMATION**\n\n" 
                         f"📊 File: **{latest_file}**\n\n"
                         f"📆 File Date: **{file_date_str}**\n\n"
-                        f"⏱️ Analysis Period: **January 1, 2025** to **March 12, 2025** (**{days_in_period} days**)\n\n"
-                        f"🔄 Comparison Period: **January 1, 2024** to **March 12, 2024** (**{prev_year_days} days**)\n\n"
+                        f"⏱️ Analysis Period: **January 1, {year}** to **{last_realized_date.strftime('%B %d, %Y')}** (**{days_in_period} days**)\n\n"
+                        f"🔄 Comparison Period: **January 1, {prev_year}** to **{prev_year_end.strftime('%B %d, %Y')}** (**{prev_year_days} days**)\n\n"
                         f"📋 Total Rooms: **{get_total_rooms()}**")
 
 if __name__ == "__main__":
