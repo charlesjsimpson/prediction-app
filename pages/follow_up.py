@@ -4,6 +4,7 @@ import sys
 import os
 import pandas as pd
 import plotly.express as px
+import calendar
 
 # Add the parent directory to the path to import from utils
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -259,7 +260,7 @@ def main():
         st.subheader("Monthly Performance Metrics")
         
         # Create a function to generate monthly revenue bar chart
-        def create_monthly_revenue_chart(df, start_date, end_date, years_to_include=[2023, 2024, 2025]):
+        def create_monthly_revenue_chart(df, start_date, end_date, years_to_include=[2023, 2024, 2025], metric='revenue'):
             """Create a monthly revenue bar chart for the specified years and date range.
             
             Parameters:
@@ -343,11 +344,17 @@ def main():
                 height=500
             )
             
-            # Format y-axis to show currency without decimal places
-            fig.update_yaxes(
-                tickprefix='€',
-                tickformat=',d'  # Format as integer with thousands separator
-            )
+            # Format y-axis to show currency with appropriate decimal places
+            if metric == 'revenue':
+                fig.update_yaxes(
+                    tickprefix='€',
+                    tickformat=',d'  # Format as integer with thousands separator
+                )
+            else:  # avg_price
+                fig.update_yaxes(
+                    tickprefix='€',
+                    tickformat=',.2f'  # Format with 2 decimal places
+                )
             
             # Format hover template to show values without decimal places
             fig.update_traces(
@@ -684,6 +691,194 @@ def main():
             
             # Add an explanation
             st.caption(f"Monthly Average Daily Rate comparison for {', '.join(map(str, years_to_include))} from January 1 to {last_realized_date.strftime('%B %d')}")
+        
+        # Add a divider before the revenue breakdown section
+        st.divider()
+        
+        # Monthly Revenue Breakdown by Type_Detail Section
+        st.subheader("Monthly Revenue Breakdown by Type_Detail")
+        
+        # Create a function to generate monthly revenue breakdown chart by Type_Detail with year comparison
+        def create_monthly_revenue_breakdown_chart(df, month_filter, compare_years=[2023, 2024, 2025], metric='revenue'):
+            """Create a monthly revenue breakdown chart by Type_Detail for the specified year and month.
+            
+            Parameters:
+            -----------
+            df : pandas.DataFrame
+                DataFrame with hotel data
+            year_filter : int
+                Year to include in the chart
+            month_filter : int
+                Month to include in the chart
+                
+            Returns:
+            --------
+            plotly.graph_objects.Figure
+                Plotly figure object
+            """
+            # Create a copy to avoid modifying the original
+            data = df.copy()
+            
+            # Ensure we're working with numeric values
+            data['ca_room'] = pd.to_numeric(data['ca_room'], errors='coerce')
+            data['n_rooms'] = pd.to_numeric(data['n_rooms'], errors='coerce')
+            
+            # Filter data for the specified years and month
+            data = data[data['year'].isin(compare_years) & (data['month'] == month_filter)]
+            
+            # Group by Type_Detail and year (using 'type' column instead since type_detail doesn't exist)
+            type_data = data.groupby(['type', 'year']).agg({
+                'ca_room': 'sum',
+                'n_rooms': 'sum'
+            }).reset_index()
+            
+            # Calculate average price (revenue / rooms sold)
+            type_data['avg_price'] = type_data.apply(
+                lambda row: row['ca_room'] / row['n_rooms'] if row['n_rooms'] > 0 else 0, 
+                axis=1
+            )
+            
+            # Define the main categories to keep
+            main_categories = ['INDIV PUBL INDIRECT', 'INDIV PUBL DIRECT', 'NEGOCIES', 'GROUPES']
+            
+            # Create a copy of the original data
+            combined_type_data = type_data.copy()
+            
+            # Process each year separately to combine categories
+            result_data = []
+            
+            for year in compare_years:
+                # Filter data for the current year
+                year_data = combined_type_data[combined_type_data['year'] == year]
+                
+                # Filter rows for categories not in main_categories
+                other_cat_data = year_data[~year_data['type'].isin(main_categories)]
+                
+                # Keep the main categories
+                main_cat_data = year_data[year_data['type'].isin(main_categories)]
+                
+                # Sum the revenue for other categories
+                if not other_cat_data.empty:
+                    other_cat_sum = other_cat_data['ca_room'].sum()
+                    
+                    # Add a new row for "Other"
+                    other_row = pd.DataFrame({'type': ['Other'], 'year': [year], 'ca_room': [other_cat_sum]})
+                    
+                    # Combine main categories with the "Other" category
+                    year_result = pd.concat([main_cat_data, other_row], ignore_index=True)
+                else:
+                    year_result = main_cat_data
+                
+                # Add to the result
+                result_data.append(year_result)
+            
+            # Combine all years
+            combined_type_data = pd.concat(result_data, ignore_index=True)
+            
+            # Determine which metric to use
+            if metric == 'revenue':
+                y_column = 'ca_room'
+                y_label = 'Revenue (€)'
+                title_prefix = 'Monthly Revenue'
+                # Format text as integer with commas
+                text_format = combined_type_data[y_column].apply(lambda x: f"{int(x):,d}")
+            else:  # avg_price
+                y_column = 'avg_price'
+                y_label = 'Average Price (€)'
+                title_prefix = 'Monthly Average Price'
+                # Format text with 2 decimal places
+                text_format = combined_type_data[y_column].apply(lambda x: f"{x:.2f}")
+            
+            # Create the bar chart using px.bar to match Monthly Performance Metrics style
+            fig = px.bar(
+                combined_type_data,
+                x='type',
+                y=y_column,
+                color=combined_type_data['year'].astype(str),
+                barmode='group',
+                color_discrete_map=BLUE_COLORS,
+                labels={
+                    y_column: y_label,
+                    'type': 'Revenue Type',
+                    'year': 'Year'
+                },
+                title=f'{title_prefix} Comparison by Type ({calendar.month_name[month_filter]} 2023-2025)',
+                text=text_format
+            )
+            
+            # Customize layout
+            fig.update_layout(
+                xaxis_title='Revenue Type',
+                yaxis_title=y_label,
+                height=500,
+                # Format y-axis to show currency format with appropriate decimal places
+                yaxis=dict(
+                    tickformat=',.2f' if metric == 'avg_price' else ',.0f',
+                    tickprefix='€',
+                    separatethousands=True
+                ),
+                # Improve legend
+                legend=dict(
+                    title="Year",
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1
+                )
+            )
+            
+            # Format y-axis to show currency with appropriate decimal places
+            if metric == 'revenue':
+                fig.update_yaxes(
+                    tickprefix='€',
+                    tickformat=',d'  # Format as integer with thousands separator
+                )
+            else:  # avg_price
+                fig.update_yaxes(
+                    tickprefix='€',
+                    tickformat=',.2f'  # Format with 2 decimal places
+                )
+            
+            # Ensure text is displayed properly
+            fig.update_traces(
+                textposition='outside',
+                textfont=dict(size=10)
+            )
+            
+            return fig
+        
+        # Get the current month's data
+        current_month = last_realized_date.month
+        
+        # Create two columns for the charts
+        col1, col2 = st.columns(2)
+        
+        # Create the revenue chart comparing 2023, 2024, and 2025 for the current month
+        revenue_comparison_chart = create_monthly_revenue_breakdown_chart(
+            df, 
+            month_filter=current_month,
+            compare_years=[2023, 2024, 2025],
+            metric='revenue'
+        )
+        
+        # Create the average price chart
+        avg_price_comparison_chart = create_monthly_revenue_breakdown_chart(
+            df, 
+            month_filter=current_month,
+            compare_years=[2023, 2024, 2025],
+            metric='avg_price'
+        )
+        
+        # Display the revenue chart in the first column
+        with col1:
+            st.plotly_chart(revenue_comparison_chart, use_container_width=True)
+            st.caption(f"Monthly Revenue by Type ({calendar.month_name[current_month]} 2023-2025)")
+        
+        # Display the average price chart in the second column
+        with col2:
+            st.plotly_chart(avg_price_comparison_chart, use_container_width=True)
+            st.caption(f"Monthly Average Price by Type ({calendar.month_name[current_month]} 2023-2025)")
         
         # Now that KPIs are calculated, we can display the data information expander
         with expander_placeholder.container():
