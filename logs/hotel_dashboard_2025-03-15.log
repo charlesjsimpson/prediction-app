@@ -1,0 +1,38 @@
+2025-03-15 14:42:44,251 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Budget Planning
+2025-03-15 14:42:44,251 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-15 14:42:44,679 - hotel_dashboard - INFO - User: admin - Action: Data loaded - Dataset: price data - Details: Successfully loaded 7103 records with 13 columns
+2025-03-15 14:42:44,680 - hotel_dashboard - INFO - User: admin - Action: Data generating - Dataset: budget_2025 - Details: Creating new budget based on historical data
+2025-03-15 14:42:45,992 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Monthly Tracking Dashboard
+2025-03-15 14:42:45,994 - hotel_dashboard - INFO - User: admin - Action: Data processing - Dataset: price data - Details: Processing date columns
+2025-03-15 14:42:46,034 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed date columns
+2025-03-15 14:42:46,034 - hotel_dashboard - INFO - User: admin - Action: Viewing monthly tab
+2025-03-15 14:42:46,035 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: year data - Details: Extracted year from date column
+2025-03-15 14:42:46,035 - hotel_dashboard - INFO - User: admin - Action: Data aggregating - Dataset: monthly summary - Details: Grouping data by month and year
+2025-03-15 14:42:46,037 - hotel_dashboard - INFO - User: admin - Action: Data aggregated - Dataset: monthly summary - Details: Created summary with 36 records
+2025-03-15 14:42:46,209 - hotel_dashboard - INFO - User: admin - Action: Displayed KPI summary table
+2025-03-15 14:42:46,215 - hotel_dashboard - INFO - User: admin - Action: Displayed key ratios table
+2025-03-15 14:45:39,788 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Budget Planning
+2025-03-15 14:45:39,790 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-15 14:45:40,230 - hotel_dashboard - INFO - User: admin - Action: Data loaded - Dataset: price data - Details: Successfully loaded 7103 records with 13 columns
+2025-03-15 14:45:40,231 - hotel_dashboard - INFO - User: admin - Action: Data generating - Dataset: budget_2025 - Details: Creating new budget based on historical data
+2025-03-15 14:45:41,982 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Monthly Tracking Dashboard
+2025-03-15 14:45:41,986 - hotel_dashboard - INFO - User: admin - Action: Data processing - Dataset: price data - Details: Processing date columns
+2025-03-15 14:45:42,042 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed date columns
+2025-03-15 14:45:42,042 - hotel_dashboard - INFO - User: admin - Action: Viewing monthly tab
+2025-03-15 14:45:42,042 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: year data - Details: Extracted year from date column
+2025-03-15 14:45:42,043 - hotel_dashboard - INFO - User: admin - Action: Data aggregating - Dataset: monthly summary - Details: Grouping data by month and year
+2025-03-15 14:45:42,044 - hotel_dashboard - INFO - User: admin - Action: Data aggregated - Dataset: monthly summary - Details: Created summary with 36 records
+2025-03-15 14:45:42,051 - hotel_dashboard - INFO - User: admin - Action: Displayed KPI summary table
+2025-03-15 14:45:42,055 - hotel_dashboard - INFO - User: admin - Action: Displayed key ratios table
+2025-03-15 14:45:46,935 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Analysis Dashboard
+2025-03-15 14:45:46,935 - hotel_dashboard - INFO - User: admin - Action: Data loading - Dataset: price data
+2025-03-15 14:45:47,382 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed 7103 records
+2025-03-15 14:45:49,625 - hotel_dashboard - INFO - User: admin - Action: Accessed page: Monthly Tracking Dashboard
+2025-03-15 14:45:49,628 - hotel_dashboard - INFO - User: admin - Action: Data processing - Dataset: price data - Details: Processing date columns
+2025-03-15 14:45:49,668 - hotel_dashboard - INFO - User: admin - Action: Data processed - Dataset: price data - Details: Successfully processed date columns
+2025-03-15 14:45:49,669 - hotel_dashboard - INFO - User: admin - Action: Viewing monthly tab
+2025-03-15 14:45:49,670 - hotel_dashboard - INFO - User: admin - Action: Data extracted - Dataset: year data - Details: Extracted year from date column
+2025-03-15 14:45:49,671 - hotel_dashboard - INFO - User: admin - Action: Data aggregating - Dataset: monthly summary - Details: Grouping data by month and year
+2025-03-15 14:45:49,673 - hotel_dashboard - INFO - User: admin - Action: Data aggregated - Dataset: monthly summary - Details: Created summary with 36 records
+2025-03-15 14:45:49,680 - hotel_dashboard - INFO - User: admin - Action: Displayed KPI summary table
+2025-03-15 14:45:49,685 - hotel_dashboard - INFO - User: admin - Action: Displayed key ratios table
