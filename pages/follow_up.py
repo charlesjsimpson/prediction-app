@@ -68,46 +68,47 @@ def main():
         # Year is already defined at the top of the function
         
         # Get filename and extract date information - find the latest file for 2025
-        files_2025 = df[df['year'] == 2025]['Source_File'].unique() if 'Source_File' in df.columns else []
-        
-        if len(files_2025) > 0:
-            # Sort files by their date in the filename (assuming format YYYY_PU_MM_DD.xlsx)
-            def extract_date_from_filename(filename):
-                try:
-                    parts = filename.split('_')
-                    if len(parts) >= 4:
-                        month_part = int(parts[2])
-                        day_part = int(parts[3].split('.')[0])
-                        return (month_part, day_part)  # Return as tuple for sorting
-                    return (0, 0)  # Default for invalid format
-                except (ValueError, IndexError):
-                    return (0, 0)  # Default for invalid format
-            
-            # Sort files by date (most recent first)
-            latest_file = sorted(files_2025, key=extract_date_from_filename, reverse=True)[0]
-            
-            # Extract date from the latest filename
+        def extract_date_from_filename(filename):
+            """Extract date components from filename in format YYYY_PU_MM_DD.xlsx"""
             try:
-                parts = latest_file.split('_')
+                parts = filename.split('_')
                 if len(parts) >= 4:
                     year_part = int(parts[0])
                     month_part = int(parts[2])
                     day_part = int(parts[3].split('.')[0])
-                    file_date = datetime(year_part, month_part, day_part)
-                    file_date_str = file_date.strftime("%B %d, %Y")
-                    
-                    # Update the year variable based on the file
-                    year = year_part
-                else:
-                    file_date = datetime(year, 3, 17)  # Default to March 17, 2025
-                    file_date_str = file_date.strftime("%B %d, %Y")
+                    return year_part, month_part, day_part
+                return None
             except (ValueError, IndexError):
-                file_date = datetime(year, 3, 17)  # Default to March 17, 2025
+                return None
+        
+        # Get all 2025 files from the dataframe
+        files_2025 = df[df['year'] == 2025]['Source_File'].unique() if 'Source_File' in df.columns else []
+        
+        # Default values in case no valid files are found
+        file_date = datetime(year, 3, 17)  # Default to March 17, 2025
+        file_date_str = file_date.strftime("%B %d, %Y")
+        latest_file = "2025_PU_03_17.xlsx"  # Fallback to the latest known file
+        
+        if len(files_2025) > 0:
+            # Process each file to find the latest one
+            latest_date = (0, 0, 0)  # (year, month, day)
+            
+            for filename in files_2025:
+                date_parts = extract_date_from_filename(filename)
+                if date_parts and (date_parts[0] > latest_date[0] or 
+                                 (date_parts[0] == latest_date[0] and date_parts[1] > latest_date[1]) or
+                                 (date_parts[0] == latest_date[0] and date_parts[1] == latest_date[1] and date_parts[2] > latest_date[2])):
+                    latest_date = date_parts
+                    latest_file = filename
+            
+            # If we found a valid file, update the date information
+            if latest_date != (0, 0, 0):
+                year_part, month_part, day_part = latest_date
+                file_date = datetime(year_part, month_part, day_part)
                 file_date_str = file_date.strftime("%B %d, %Y")
-        else:
-            latest_file = "2025_PU_03_17.xlsx"  # Fallback to the latest known file
-            file_date = datetime(year, 3, 17)  # Default to March 17, 2025
-            file_date_str = file_date.strftime("%B %d, %Y")
+                
+                # Update the year variable based on the file
+                year = year_part
         
         # The file date indicates when the report was generated
         # The complete data is available until the day before the file date
@@ -149,16 +150,16 @@ def main():
     # Filter data for the specific period (January 1 to March 13, 2025)
     df = ensure_datetime(df)  # Ensure dates are in datetime format
     
-    # Filter current year data (2025) from January 1 to March 12
+    # Filter current year data using the dynamic year variable
     current_year_df = df[
-        (df['year'] == 2025) & 
+        (df['year'] == year) & 
         (df['day'] >= start_date) & 
         (df['day'] <= end_date)
     ]
     
-    # Filter previous year data (2024) for the same period (January 1 to March 12)
+    # Filter previous year data for the same period
     prev_year_df = df[
-        (df['year'] == 2024) & 
+        (df['year'] == prev_year) & 
         (df['day'] >= prev_year_start) & 
         (df['day'] <= prev_year_end)
     ]
