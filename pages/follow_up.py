@@ -12,7 +12,8 @@ from utils.hotel_metrics import (
     ensure_datetime,
     get_total_rooms,
     set_total_rooms,
-    get_days_in_period
+    get_days_in_period,
+    count_full_occupancy_days
 )
 # No chart imports needed for the simplified dashboard
 from fetch_data.fetch_data_PU import price
@@ -131,12 +132,22 @@ def main():
     comparison_year = 2024  # Compare with previous year
     kpis = calculate_kpis(period_df, year_filter=2025, comparison_year=comparison_year, is_ytd=False)
     
+    # Calculate number of days with 100% occupancy for current and previous year
+    full_occupancy_days_current = count_full_occupancy_days(df, year=2025, is_ytd=True, current_date=end_date)
+    full_occupancy_days_prev = count_full_occupancy_days(df, year=2024, is_ytd=True, current_date=prev_year_end)
+    
+    # Calculate percentage change in full occupancy days
+    if full_occupancy_days_prev > 0:
+        full_occupancy_change = ((full_occupancy_days_current - full_occupancy_days_prev) / full_occupancy_days_prev) * 100
+    else:
+        full_occupancy_change = float('inf') if full_occupancy_days_current > 0 else 0
+    
     # KPI Summary section
     with kpi_container:
         st.subheader("Key Performance Indicators")
         
-        # Display KPIs in a grid layout
-        col1, col2, col3 = st.columns(3)
+        # Display all KPIs in a single row
+        col1, col2, col3, col4, col5 = st.columns(5)
         
         # Display Total Revenue
         with col1:
@@ -162,9 +173,6 @@ def main():
                 delta=f"{kpis['Average Daily Rate']['change']:.1f}%" if 'change' in kpis['Average Daily Rate'] else None
             )
         
-        # Second row of metrics
-        col4, col5, col6 = st.columns(3)
-        
         # Display RevPAR
         with col4:
             st.metric(
@@ -173,37 +181,31 @@ def main():
                 delta=f"{kpis['RevPAR']['change']:.1f}%" if 'change' in kpis['RevPAR'] else None
             )
         
-        # Display Rooms Sold with enhanced visibility
+        # Display 100% Occupancy Days
         with col5:
+            # Format the delta with appropriate sign and color
+            if full_occupancy_change == float('inf'):
+                delta_text = "N/A (prev. year: 0)"
+            else:
+                delta_text = f"{full_occupancy_change:.1f}%"
+                
             st.metric(
-                label="Rooms Sold in Period",
-                value=f"{int(kpis['Rooms Sold']['value']):,}",
-                delta=f"{kpis['Rooms Sold']['change']:.1f}%" if 'change' in kpis['Rooms Sold'] else None,
-                help="Total number of rooms sold from January 1, 2025 to March 12, 2025"
-            )
-        
-        # Display Days in Period
-        with col6:
-            st.metric(
-                label="Days in Period",
-                value=f"{days_in_period}",
-                help="Total number of days in the analysis period"
+                label="100% Occupancy Days",
+                value=f"{full_occupancy_days_current}",
+                delta=delta_text,
+                help=f"Days with 100% occupancy rate from January 1 to March 12, 2025 (vs. {full_occupancy_days_prev} days in 2024)"
             )
         
         # Now that KPIs are calculated, we can display the data information expander
         with expander_placeholder.container():
             with st.expander("📋 Data Information", expanded=False):
-                # Get the rooms sold value from KPIs
-                rooms_sold = int(kpis['Rooms Sold']['value']) if 'Rooms Sold' in kpis else 0
-                
-                # Create a more detailed info message with exact period information and rooms sold
+                # Create a more detailed info message with exact period information
                 st.info(f"📅 **DATA INFORMATION**\n\n" 
                         f"📊 File: **{latest_file}**\n\n"
                         f"📆 File Date: **{file_date_str}**\n\n"
                         f"⏱️ Analysis Period: **January 1, 2025** to **March 12, 2025** (**{days_in_period} days**)\n\n"
                         f"🔄 Comparison Period: **January 1, 2024** to **March 12, 2024** (**{prev_year_days} days**)\n\n"
-                        f"📋 Total Rooms: **{get_total_rooms()}**\n\n"
-                        f"💼 Rooms Sold in Period: **{rooms_sold:,}** rooms")
+                        f"📋 Total Rooms: **{get_total_rooms()}**")
 
 if __name__ == "__main__":
     main()

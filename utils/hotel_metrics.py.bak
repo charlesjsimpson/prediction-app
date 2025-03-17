@@ -251,37 +251,102 @@ def get_month_order():
     """Get the order of months for sorting"""
     return [datetime(2023, i, 1).strftime('%B') for i in range(1, 13)]
 
-def count_full_occupancy_days(df, year, is_ytd=False, current_date=None):
+def count_full_occupancy_days(df, year=None, is_ytd=False, current_date=None):
     """
     Count the number of days with 100% occupancy rate
     
     Args:
-        df: DataFrame containing the data
-        year: Year to filter the data by
+        df: DataFrame containing the hotel data
+        year: Year to filter the data by (optional)
         is_ytd: Whether to calculate year-to-date
         current_date: Current date for YTD filtering
         
     Returns:
-        int: Number of days with 100% occupancy
+        int: Number of days with 100% occupancy rate
     """
     # Ensure day column is datetime
     df = ensure_datetime(df)
     
-    # Filter data for the specified year
-    year_data = df[df['year'] == year].copy()
+    # Filter by year if specified
+    if year is not None:
+        df_filtered = df[df['day'].dt.year == year]
+    else:
+        df_filtered = df
     
-    # Apply YTD filtering if needed
-    if is_ytd and current_date is not None:
-        year_data = year_data[year_data['day'] <= current_date.replace(year=year)]
+    # Apply YTD filter if needed
+    if is_ytd:
+        if current_date is None:
+            current_date = pd.Timestamp.now()
+        
+        # Get the first day of the year
+        first_day_of_year = pd.Timestamp(current_date.year, 1, 1)
+        
+        # Filter data for YTD
+        df_filtered = df_filtered[(df_filtered['day'] >= first_day_of_year) & 
+                                 (df_filtered['day'] <= current_date)]
     
-    # Group by day and sum rooms sold
-    daily_rooms = year_data.groupby('day')['n_rooms'].sum().reset_index()
+    # Calculate daily occupancy rate
+    # Group by day and sum the rooms sold
+    daily_rooms = df_filtered.groupby('day')['n_rooms'].sum().reset_index()
     
-    # Count days where rooms sold equals or exceeds total rooms
-    total_rooms = get_total_rooms()
-    full_occupancy_days = daily_rooms[daily_rooms['n_rooms'] >= total_rooms].shape[0]
+    # Calculate occupancy rate for each day
+    daily_rooms['occupancy_rate'] = (daily_rooms['n_rooms'] / get_total_rooms()) * 100
+    
+    # Count days with 100% occupancy (allowing for a small margin of error)
+    full_occupancy_days = daily_rooms[daily_rooms['occupancy_rate'] >= 99.9].shape[0]
     
     return full_occupancy_days
+
+def calculate_current_month_kpis(df, current_date=None):
+    """
+    Calculate KPIs for the current month (from the first day of the month to the most recent date)
+    
+    Args:
+        df: DataFrame containing the hotel data
+        current_date: Current date (defaults to today)
+        
+    Returns:
+        Dictionary with current month KPI values
+    """
+    # Set current date if not provided
+    if current_date is None:
+        current_date = pd.Timestamp.now()
+    
+    # Ensure day column is datetime
+    df = ensure_datetime(df)
+    
+    # Get the first day of the current month
+    first_day_of_month = pd.Timestamp(current_date.year, current_date.month, 1)
+    
+    # Filter data for the current month
+    current_month_data = df[(df['day'] >= first_day_of_month) & (df['day'] <= current_date)]
+    
+    # Calculate total revenue for the current month
+    total_revenue = current_month_data['ca_room'].sum()
+    
+    # Calculate total rooms sold for the current month
+    total_rooms_sold = current_month_data['n_rooms'].sum()
+    
+    # Calculate the number of days in the period
+    days_in_period = get_days_in_period(first_day_of_month, current_date)
+    
+    # Calculate occupancy rate using the exact calendar days formula
+    # Occupancy Rate = (Rooms Sold / (Calendar Days in Period × Total Rooms)) × 100
+    occupancy_rate = (total_rooms_sold / (days_in_period * get_total_rooms())) * 100 if days_in_period > 0 else 0
+    
+    # Calculate ADR
+    adr = total_revenue / total_rooms_sold if total_rooms_sold > 0 else 0
+    
+    # Return KPIs
+    return {
+        'period_start': first_day_of_month,
+        'period_end': current_date,
+        'days_in_period': days_in_period,
+        'total_revenue': total_revenue,
+        'total_rooms_sold': total_rooms_sold,
+        'occupancy_rate': occupancy_rate,
+        'adr': adr
+    }
 
 def get_insights(df, year):
     """
